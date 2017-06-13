@@ -1,0 +1,12 @@
+Feature: Test cases against www.sportsdirect.com
+
+Scenario:
+    Given Visit www.sportsdirect.com
+    When User chooses two products and puts them in the bag
+    And User goes to the bag
+    Then Ensure that the total sum is calculated correctly
+
+Scenario:
+    Given User adds one more instance of shoes product
+    When Shoes has two items
+    Then Ensure that the new total sum is calculated correctly

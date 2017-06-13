@@ -1,0 +1,175 @@
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
+import cucumber.api.java.en.Then;
+import cucumber.api.PendingException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+//import org.openqa.selenium.phantomjsdriver;
+//import phantomjsdriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.Cookie;
+import java.util.List;
+
+public class Stepdefs {
+
+    WebDriver driver;
+    double expectedPrice1 = 0.0;
+    double expectedPrice2 = 0.0;
+    
+    @Given("^Visit www\\.sportsdirect\\.com$")
+    public void visit_www_sportsdirect_com() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        FirefoxProfile profile = new FirefoxProfile();
+        //profile.setPreference("dom.disable_beforeunload", true);
+        profile.setPreference("dom.popup_maximum", 0);
+        profile.setPreference("privacy.popups.showBrowserMessage", false);
+        //profile.setPreference("javascript.enabled", false);
+        System.setProperty("webdriver.gecko.driver", "geckodriver");
+        DesiredCapabilities capabilities=DesiredCapabilities.firefox();
+        capabilities.setCapability("marionette", false);
+        capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+        
+        driver = new FirefoxDriver(capabilities);
+        //driver = getPhantomJSDriver();
+        Cookie ck = new Cookie("AdvertCookie", "true");
+        //Cookie ck2 = new Cookie("acceptedCookies", "false");
+        driver.manage().addCookie(ck);
+        //driver.manage().addCookie(ck2);
+        driver.get("http://www.sportsdirect.com");
+        
+    }
+
+    @When("^User chooses two products and puts them in the bag$")
+    public void user_chooses_two_products_and_puts_them_in_the_bag() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        //FluentWait<WebDriver> popupWait = new FluentWait<>(driver)
+        //    .withTimeout(30, TimeUnit.SECONDS)
+        //    .pollingEvery(200, TimeUnit.MILLISECONDS)
+        //    .ignoring(NoSuchElementException.class);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        
+        WebDriverWait wait = new WebDriverWait(driver, 2);
+        WebElement popup = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("advertPopup")));
+        
+        if (popup.isDisplayed()) {
+            popup.findElement(By.xpath("//*[@id='advertPopup']//button")).click();
+        }
+
+        WebElement elemMens = driver.findElement(By.xpath("//a[@href='/mens']"));
+        elemMens.click();
+        
+        WebElement elemShoes = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/mens/mens-shoes']")));
+        elemShoes.click();
+        popup = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("advertPopup")));
+        if (popup.isDisplayed()) {
+                popup.findElement(By.xpath("//*[@id='advertPopup']//button")).click();
+        }
+        WebElement pic1 = driver.findElement(By.xpath("//img[@src='http://images.sportsdirect.com/images/products/11400303_4pl.jpg']"));
+        pic1.click();
+
+        WebElement size1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(.,'8 (42)')]")));
+        size1.click();
+
+        popup = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("advertPopup")));
+        if (popup.isDisplayed()) {
+                popup.findElement(By.xpath("//*[@id='advertPopup']//button")).click();
+        }
+        WebElement expectedPrize1 = driver.findElement(By.xpath("//span[@class='productHasRef']"));
+
+        expectedPrice1 = Double.parseDouble(expectedPrize1.getText().replace(",",".").split(" ")[0]);
+        System.out.println("expectedPrize1 = " + expectedPrice1);
+
+        WebElement elemToBag = driver.findElement(By.xpath("//a[@class='addToBag']"));
+        elemToBag.click();
+        
+        wait.until(ExpectedConditions.textToBe(
+                                               By.xpath("//span[@id='bagQuantity']"),
+                                               "1"));
+        //Select second item
+        elemMens = driver.findElement(By.xpath("//a[@href='/mens']"));
+        elemMens.click();
+
+        WebElement elemTrainers =  driver.findElement(By.xpath("//a[@href='/mens/mens-trainers']"));
+        elemTrainers.click();
+
+        List<WebElement> pic2 = driver.findElements(By.xpath("//a[@class='ProductImageList']"));
+        pic2.get(2).click();
+        
+        List<WebElement> size2 = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//ul[@class='sizeButtons hidden-xs']/li")));
+        size2.get(2).click();
+        //WebElement item2 = driver.findElement(By.xpath("//a[@id='dnn_ctr34775511_ViewTemplate_ctl00_ctl15_aAddToBag']"));
+        //item2.click();
+        
+        WebElement expectedPrize2 = driver.findElement(By.xpath("//span[@class='productHasRef']"));
+
+        expectedPrice2 = Double.parseDouble(expectedPrize2.getText().replace(",",".").split(" ")[0]);
+        System.out.println("expectedPrize1 = " + expectedPrice2);
+        elemToBag = driver.findElement(By.xpath("//a[@class='addToBag']"));
+        elemToBag.click();
+    }
+
+    @When("^User goes to the bag$")
+    public void user_goes_to_the_bag() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new PendingException();
+        WebDriverWait wait = new WebDriverWait(driver, 2);
+        WebElement bag = driver.findElement(By.xpath("//span[@id='bagQuantity']"));
+        bag.click();
+        //driver.navigate().to("http://www.sportsdirect.com/Cart");
+        //WebDriverWait wait = new WebDriverWait(driver, 2);
+        //WebElement popup = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("advertPopup")));
+        //if (popup.isDisplayed()) {
+        //       popup.findElement(By.xpath("//*[@id='advertPopup']//button")).click();
+        //}
+    }
+
+    @Then("^Ensure that the total sum is calculated correctly$")
+    public void ensure_that_the_total_sum_is_calculated_correctly() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        WebElement elemTotal = driver.findElement(By.xpath("//span[@id='TotalValue']"));
+        Double total = Double.parseDouble(elemTotal.getText().replace(",",".").split(" ")[0]);
+        assert(total == (expectedPrice1+expectedPrice2));
+    }
+
+    @Given("^User adds one more instance of shoes product$")
+    public void user_adds_one_more_instance_of_shoes_product() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        System.out.println("add");
+        List<WebElement> elemPlus = driver.findElements(By.xpath("//a[#class='BasketQuantBut s-basket-plus-button']"));
+        System.out.println(elemPlus.toString());
+        //elemPlus.click();
+    }
+
+    @When("^Shoes has two items$")
+    public void shoes_has_two_items() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+    
+    @Given("^Visit products again$")
+    public void visit_products_again() throws Throwable {
+        WebElement elemPlus = driver.findElement(By.xpath("//a[@class='BasketQuantBut s-basket-plus-button']"));
+        //table/tbody/tr/td[@class='prdQuantity'
+    }
+
+    @When("^User adds one more instance of a particular product$")
+    public void user_adds_one_more_instance_of_a_particular_product() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Then("^Ensure that the new total sum is calculated correctly$")
+    public void ensure_that_the_new_total_sum_is_calculated_correctly() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        
+        WebElement elemTotal = driver.findElement(By.xpath("//span[@id='TotalValue']"));
+        Double total = Double.parseDouble(elemTotal.getText().replace(",",".").split(" ")[0]);
+        assert(total == (expectedPrice1+expectedPrice2));
+    }
+}
