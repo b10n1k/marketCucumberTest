@@ -2,3 +2,4 @@ The test run successfully. I used cucumber with selenium3 to accomplish the task
 
 I have tested the scenario only in firefox(v53) on a Linux machine. I include the geckodriver that I used for this test. I dont own a Windows machine to testagainst but this should not be a problem if you run FF, but I could not test IE for this reason. I was uncertain whether I have to use headless browser or not. In such a case I could use phantomjs.
 
+Another thing that makes me struggle with, was the advert popups which I try to disable with a various ways that they did not seem to work. The site set the AdvertCookie to True when you close the popup the first time and I was expecting that doing that manually I would get rid of the popups afterwards. But this, as i said, didnt work. Thus the actions go step by step to add the two items in the bag, instead to be in a for loop, as it would be more proper. 
